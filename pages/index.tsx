@@ -41,6 +41,9 @@ export async function getStaticProps() {
           jokeCollection {
             items {
               content
+              sys {
+                id
+              }
             }
           }
         }`;
