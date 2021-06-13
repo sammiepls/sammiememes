@@ -3,6 +3,11 @@ import Image from "next/image";
 import styles from "styles/Home.module.css";
 import { fetchContent } from "utils/contentful";
 import Joke from "components/Joke";
+import JokeProp from "utils/contentTypes/Jokes";
+
+type Props = {
+  jokes: JokeProp[];
+};
 
 export default function Home({ jokes }) {
   return (
