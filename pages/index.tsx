@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
-import styles from "../styles/Home.module.css";
-import { fetchContent } from "../utils/contentful";
+import styles from "styles/Home.module.css";
+import { fetchContent } from "utils/contentful";
 
 export default function Home({ jokes }) {
   return (
