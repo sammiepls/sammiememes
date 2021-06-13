@@ -2,6 +2,7 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "styles/Home.module.css";
 import { fetchContent } from "utils/contentful";
+import Joke from "components/Joke";
 
 export default function Home({ jokes }) {
   return (
@@ -16,8 +17,11 @@ export default function Home({ jokes }) {
         <h1 className={styles.title}>Welcome to my horrible jokes library</h1>
 
         <p className={styles.description}>Yes I know they're terrible</p>
-
-        <div>{jokes.map((j) => j.content)}</div>
+        <div>
+          {jokes.map(({ content }) => (
+            <Joke content={content} />
+          ))}
+        </div>
       </main>
 
       <footer className={styles.footer}>
