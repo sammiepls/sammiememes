@@ -1,6 +1,6 @@
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
-import Image from 'next/image';
+import Masonry from 'react-masonry-css';
 import { fetchContent } from 'utils/contentful';
 import Joke from 'components/Joke';
 import Header from 'components/Header';
@@ -23,13 +23,21 @@ const Home: React.FC<Props> = ({ jokes }) => {
         />
       </Head>
 
-      <main>
-        <Header />
-        <div>
+      <Header />
+      <main className="md:container md:mx-auto px-4 flex-1">
+        <Masonry
+          breakpointCols={{
+            default: 3,
+            700: 2,
+            500: 1,
+          }}
+          className="masonry"
+          columnClassName="masonry-column"
+        >
           {jokes.map(({ content, sys }) => (
             <Joke key={sys.id} content={content} sys={sys} />
           ))}
-        </div>
+        </Masonry>
       </main>
 
       <footer className="text-center m-4">
