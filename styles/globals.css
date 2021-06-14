@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 body {
-  font-family: 'Inconsolata';
+  font-family: theme('fontFamily.body');
 }

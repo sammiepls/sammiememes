@@ -6,6 +6,9 @@ module.exports = {
     fontFamily: {
       body: ['Inconsolata', 'ui-monospace'],
     },
+    colors: {
+      purple: '#DDCCED',
+    },
   },
   variants: {
     extend: {},
