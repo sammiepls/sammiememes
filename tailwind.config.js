@@ -8,6 +8,8 @@ module.exports = {
     },
     colors: {
       purple: '#DDCCED',
+      white: '#fff',
+      black: '#000',
     },
   },
   variants: {
