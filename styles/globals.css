@@ -20,18 +20,28 @@ h1 {
   content: '';
   position: absolute;
   background-color: theme('colors.black');
-  bottom: -10px;
+  bottom: -14px;
   height: 10px;
   width: 100%;
   left: 10px;
+  border-bottom: 4px solid theme('colors.black');
+  border-left: 4px solid theme('colors.black');
 }
 
 .block-shadow::after {
   content: '';
   position: absolute;
   background-color: theme('colors.black');
-  right: -10px;
-  top: 10px;
+  right: -14px;
+  top: 14px;
   width: 10px;
   height: 100%;
+  border-top: 4px solid theme('colors.black');
+  border-right: 4px solid theme('colors.black');
+  border-bottom: 4px solid theme('colors.black');
+}
+
+.yellow-shadow::after,
+.yellow-shadow::before {
+  background-color: theme('colors.yellow');
 }
