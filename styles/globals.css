@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --border-width: 4px;
+  --masonry-gap: 1.5rem;
+  --block-shadow-thickness: 1rem;
+  --block-shadow-offset: 0.75rem;
+}
+
 body {
   font-family: theme('fontFamily.body');
 }
@@ -13,32 +20,32 @@ h1 {
 .block-shadow {
   position: relative;
   background-color: white;
-  border: 4px solid theme('colors.black');
+  border: var(--border-width) solid theme('colors.black');
 }
 
 .block-shadow::before {
   content: '';
   position: absolute;
   background-color: theme('colors.black');
-  bottom: -14px;
-  height: 10px;
+  bottom: calc(-1 * var(--block-shadow-thickness));
+  height: var(--block-shadow-offset);
   width: 100%;
-  left: 10px;
-  border-bottom: 4px solid theme('colors.black');
-  border-left: 4px solid theme('colors.black');
+  left: var(--block-shadow-thickness);
+  border-bottom: var(--border-width) solid theme('colors.black');
+  border-left: var(--border-width) solid theme('colors.black');
 }
 
 .block-shadow::after {
   content: '';
   position: absolute;
   background-color: theme('colors.black');
-  right: -14px;
-  top: 14px;
-  width: 10px;
+  right: calc(-1 * var(--block-shadow-thickness));
+  top: var(--block-shadow-thickness);
+  width: var(--block-shadow-offset);
   height: 100%;
-  border-top: 4px solid theme('colors.black');
-  border-right: 4px solid theme('colors.black');
-  border-bottom: 4px solid theme('colors.black');
+  border-top: var(--border-width) solid theme('colors.black');
+  border-right: var(--border-width) solid theme('colors.black');
+  border-bottom: var(--border-width) solid theme('colors.black');
 }
 
 .yellow-shadow::after,
@@ -48,11 +55,11 @@ h1 {
 
 .masonry {
   display: flex;
-  margin-left: -1.5rem;
+  margin-left: calc(-1 * var(--masonry-gap));
   width: auto;
 }
 
 .masonry-column {
-  padding-left: 1.5rem;
+  padding-left: var(--masonry-gap);
   background-clip: padding-box;
 }
