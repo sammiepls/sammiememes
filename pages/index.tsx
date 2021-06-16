@@ -4,7 +4,7 @@ import Masonry from 'react-masonry-css';
 import { fetchContent } from 'utils/contentful';
 import Joke from 'components/Joke';
 import Header from 'components/Header';
-import JokeProp from 'utils/contentTypes/Jokes';
+import { JokeProp } from 'utils/contentTypes/Jokes';
 
 type Props = {
   jokes: JokeProp[];

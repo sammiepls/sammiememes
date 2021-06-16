@@ -1,8 +1,17 @@
-type JokeProp = {
+export type JokeProp = {
   content: string;
   sys: {
     id: string;
   };
 };
 
-export default JokeProp;
+export type JokeCollection = {
+  jokeCollection: JokeProp[];
+};
+
+export interface JokeCollectionQuery {
+  jokeCollection: {
+    __typename: 'JokeCollection';
+    items: JokeProp[];
+  };
+}
