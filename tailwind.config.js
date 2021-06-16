@@ -11,6 +11,7 @@ module.exports = {
       white: '#fff',
       black: '#000',
       yellow: '#FAFED1',
+      coral: '#F68181',
     },
   },
   variants: {
