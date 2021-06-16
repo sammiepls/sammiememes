@@ -63,3 +63,44 @@ h1 {
   padding-left: var(--masonry-gap);
   background-clip: padding-box;
 }
+
+.triangle-container {
+  position: absolute;
+  transform: translate(-110px, -50px) scale(80%) rotate(20deg);
+}
+
+.decorative-triangle {
+  border-style: solid;
+  border-width: 80px 80px 0 0;
+  border-color: theme('colors.black') transparent transparent transparent;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: -75px;
+    border-width: 62px 62px 0 0;
+    border-color: theme('colors.coral') transparent transparent transparent;
+  }
+}
+
+.circle {
+  transform: translate(450%, -160%);
+  position: absolute;
+  background-color: turquoise;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: var(--border-width) solid theme('colors.black');
+}
+
+@media screen and (max-width: 640px) {
+  .triangle-container {
+    transform: translate(-90px, -60px) scale(60%) rotate(20deg);
+  }
+
+  .circle {
+    transform: translate(430%, -160%) scale(80%);
+  }
+}
