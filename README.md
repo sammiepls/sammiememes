@@ -1,15 +1,7 @@
+## A home for horrible jokes
 A curated library of my favourite terrible jokes and memes.
 
-## Getting Started
+### [See it here](https://sammiepls.github.io/sammiememes/)
 
-First, run the development server:
+Just a fun little side project using [Next.js](https://nextjs.org/), [Apollo GraphQL](https://www.apollographql.com/), [TailwindCSS](https://tailwindcss.com/) and [Contentful](https://www.contentful.com/) as the headless CMS. 
 
-```bash
-npm run dev
-# or
-yarn dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
