@@ -1,17 +1,31 @@
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import Masonry from 'react-masonry-css';
-import { fetchContent } from 'utils/contentful';
+import { PAGE_SIZE, fetchJokes } from 'utils/contentful';
 import Joke from 'components/Joke';
 import Header from 'components/Header';
 import { JokeProp } from 'utils/contentTypes/Jokes';
+import { useState } from 'react';
 
 type Props = {
   jokes: JokeProp[];
   error?: string;
+  totalPages: number;
 };
 
-const Home: React.FC<Props> = ({ jokes, error }) => {
+const Home: React.FC<Props> = ({
+  jokes: jokeCollection,
+  error,
+  totalPages,
+}) => {
+  const [page, setPage] = useState(1);
+  const [jokes, setJokes] = useState(jokeCollection);
+
+  const fetchPaginatedJokes = async () => {
+    const { jokeCollection: paginatedJokes } = await fetchJokes(page);
+    setJokes([...jokes, ...paginatedJokes.items]);
+  };
+
   return (
     <div className="bg-purple bg-opacity-100 h-screen overflow-y-scroll flex flex-col">
       <Head>
@@ -28,7 +42,7 @@ const Home: React.FC<Props> = ({ jokes, error }) => {
       </Head>
 
       <Header />
-      <main className="md:mx-auto px-4 flex-1 max-w-6xl">
+      <main className="md:mx-auto px-4 flex flex-1 flex-col max-w-6xl">
         {error ? (
           <div className="text-center">
             <h2 className="text-4xl mb-3">Sorry something went wrong!</h2>
@@ -50,6 +64,17 @@ const Home: React.FC<Props> = ({ jokes, error }) => {
             ))}
           </Masonry>
         )}
+        {page < totalPages && (
+          <button
+            className="block-shadow max-w-sm w-full py-2 mx-auto mb-5 bg-yellow justify-center focus:outline-none	cursor-pointer"
+            onClick={() => {
+              setPage((page) => page + 1);
+              fetchPaginatedJokes();
+            }}
+          >
+            Load more
+          </button>
+        )}
       </main>
 
       <footer className="text-center m-4">
@@ -64,22 +89,11 @@ const Home: React.FC<Props> = ({ jokes, error }) => {
 };
 
 export const getStaticProps: GetStaticProps = async () => {
-  const query = `query Jokes {
-          jokeCollection {
-            items {
-              content
-              sys {
-                id
-              }
-            }
-          }
-        }`;
-
   try {
-    const { jokeCollection } = await fetchContent(query);
-    const data = await fetchContent(query);
+    const { jokeCollection } = await fetchJokes();
     return {
       props: {
+        totalPages: jokeCollection.total / PAGE_SIZE,
         jokes: jokeCollection.items,
       },
     };
