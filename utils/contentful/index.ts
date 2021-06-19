@@ -11,6 +11,8 @@ import { onError } from '@apollo/client/link/error';
 const SPACE = process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID;
 const ACCESS_TOKEN = process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN;
 
+export const PAGE_SIZE = 2;
+
 const httpLink = createHttpLink({
   uri: `https://graphql.contentful.com/content/v1/spaces/${SPACE}`,
   headers: {
@@ -35,13 +37,21 @@ const client = new ApolloClient({
   link: from([errorLink, httpLink]),
 });
 
-export async function fetchContent(
-  query: string
-): Promise<JokeCollectionQuery> {
+export async function fetchJokes(page = 1): Promise<JokeCollectionQuery> {
   try {
     const { data } = await client.query({
       query: gql`
-        ${query}
+        query Jokes {
+          jokeCollection(limit:${PAGE_SIZE}, skip:${PAGE_SIZE * page}) {
+            items {
+              content
+              sys {
+                id
+              }
+            }
+            total
+          }
+        }
       `,
     });
     return data;
