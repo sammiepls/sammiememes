@@ -13,5 +13,6 @@ export interface JokeCollectionQuery {
   jokeCollection: {
     __typename: 'JokeCollection';
     items: JokeProp[];
+    total: number;
   };
 }
