@@ -8,9 +8,10 @@ import { JokeProp } from 'utils/contentTypes/Jokes';
 
 type Props = {
   jokes: JokeProp[];
+  error?: string;
 };
 
-const Home: React.FC<Props> = ({ jokes }) => {
+const Home: React.FC<Props> = ({ jokes, error }) => {
   return (
     <div className="bg-purple bg-opacity-100 h-screen overflow-y-scroll flex flex-col">
       <Head>
@@ -28,19 +29,27 @@ const Home: React.FC<Props> = ({ jokes }) => {
 
       <Header />
       <main className="md:mx-auto px-4 flex-1 max-w-6xl">
-        <Masonry
-          breakpointCols={{
-            default: 3,
-            700: 2,
-            500: 1,
-          }}
-          className="masonry"
-          columnClassName="masonry-column"
-        >
-          {jokes.map(({ content, sys }) => (
-            <Joke key={sys.id} content={content} sys={sys} />
-          ))}
-        </Masonry>
+        {error ? (
+          <div className="text-center">
+            <h2 className="text-4xl mb-3">Sorry something went wrong!</h2>
+            <p className="text-4xl mb-2">🙈🙏😰</p>
+            <p>{error}</p>
+          </div>
+        ) : (
+          <Masonry
+            breakpointCols={{
+              default: 3,
+              700: 2,
+              500: 1,
+            }}
+            className="masonry"
+            columnClassName="masonry-column"
+          >
+            {jokes.map(({ content, sys }) => (
+              <Joke key={sys.id} content={content} sys={sys} />
+            ))}
+          </Masonry>
+        )}
       </main>
 
       <footer className="text-center m-4">
@@ -66,13 +75,32 @@ export const getStaticProps: GetStaticProps = async () => {
           }
         }`;
 
-  const { jokeCollection } = await fetchContent(query);
+  try {
+    const { jokeCollection } = await fetchContent(query);
+    const data = await fetchContent(query);
+    return {
+      props: {
+        jokes: jokeCollection.items,
+      },
+    };
+  } catch ({ graphQLErrors, networkError }) {
+    let error;
+    if (!!graphQLErrors.length) {
+      graphQLErrors.forEach(
+        ({ message }: { message: string }) => (error = message)
+      );
+    }
 
-  return {
-    props: {
-      jokes: jokeCollection.items,
-    },
-  };
+    if (networkError) {
+      error = networkError.result.errors[0].message;
+    }
+
+    return {
+      props: {
+        error,
+      },
+    };
+  }
 };
 
 export default Home;

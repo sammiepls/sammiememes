@@ -3,11 +3,13 @@ import {
   InMemoryCache,
   gql,
   createHttpLink,
+  from,
 } from '@apollo/client';
 import { JokeCollectionQuery } from '../contentTypes/Jokes';
+import { onError } from '@apollo/client/link/error';
 
-const SPACE = process.env.CONTENTFUL_SPACE_ID;
-const ACCESS_TOKEN = process.env.CONTENTFUL_ACCESS_TOKEN;
+const SPACE = process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID;
+const ACCESS_TOKEN = process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN;
 
 const httpLink = createHttpLink({
   uri: `https://graphql.contentful.com/content/v1/spaces/${SPACE}`,
@@ -17,9 +19,20 @@ const httpLink = createHttpLink({
   },
 });
 
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors)
+    graphQLErrors.forEach(({ message, locations, path }) =>
+      console.log(
+        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+      )
+    );
+
+  if (networkError) console.log(`[Network error]: ${networkError}`);
+});
+
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link: httpLink,
+  link: from([errorLink, httpLink]),
 });
 
 export async function fetchContent(
