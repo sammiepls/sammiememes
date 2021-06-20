@@ -5,14 +5,18 @@ export type JokeProp = {
   };
 };
 
+export interface JokeItemProp extends JokeProp {
+  __typename: 'Joke';
+}
+
 export type JokeCollection = {
-  jokeCollection: JokeProp[];
+  jokeCollection: JokeItemProp[];
 };
 
 export interface JokeCollectionQuery {
   jokeCollection: {
     __typename: 'JokeCollection';
-    items: JokeProp[];
+    items: JokeItemProp[];
     total: number;
   };
 }

@@ -7,6 +7,7 @@ import {
 } from '@apollo/client';
 import { JokeCollectionQuery } from '../contentTypes/Jokes';
 import { onError } from '@apollo/client/link/error';
+import { MemeCollectionQuery } from '../contentTypes/Memes';
 
 const SPACE = process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID;
 const ACCESS_TOKEN = process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN;
@@ -37,7 +38,7 @@ const client = new ApolloClient({
   link: from([errorLink, httpLink]),
 });
 
-export async function fetchJokes(page = 1): Promise<JokeCollectionQuery> {
+export async function fetchJokes(page = 0): Promise<JokeCollectionQuery> {
   try {
     const { data } = await client.query({
       query: gql`
@@ -47,6 +48,34 @@ export async function fetchJokes(page = 1): Promise<JokeCollectionQuery> {
               content
               sys {
                 id
+              }
+            }
+            total
+          }
+        }
+      `,
+    });
+    return data;
+  } catch (e) {
+    throw e;
+  }
+}
+
+export async function fetchMemes(page = 0): Promise<MemeCollectionQuery> {
+  try {
+    const { data } = await client.query({
+      query: gql`
+        query Memes {
+          memeCollection(limit:${PAGE_SIZE}, skip:${PAGE_SIZE * page}){
+            items {
+              sys {
+                id
+              }
+              meme {
+                title
+                url
+                width
+                height
               }
             }
             total
