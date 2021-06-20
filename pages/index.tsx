@@ -5,6 +5,7 @@ import { PAGE_SIZE, fetchJokes, fetchMemes } from 'utils/contentful';
 import Joke from 'components/Joke';
 import Meme from 'components/Meme';
 import Header from 'components/Header';
+import Error from 'components/Error';
 import { JokeItemProp } from 'utils/contentTypes/Jokes';
 import { useState } from 'react';
 import { MemeItemProp } from '../utils/contentTypes/Memes';
@@ -73,11 +74,7 @@ const Home: React.FC<Props> = ({
       <Header />
       <main className="md:mx-auto px-4 flex flex-1 flex-col max-w-6xl">
         {error ? (
-          <div className="text-center">
-            <h2 className="text-4xl mb-3">Sorry something went wrong!</h2>
-            <p className="text-4xl mb-2">🙈🙏😰</p>
-            <p>{error}</p>
-          </div>
+          <Error error={error} />
         ) : (
           <Masonry
             breakpointCols={{
