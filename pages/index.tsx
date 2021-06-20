@@ -1,29 +1,58 @@
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import Masonry from 'react-masonry-css';
-import { PAGE_SIZE, fetchJokes } from 'utils/contentful';
+import { PAGE_SIZE, fetchJokes, fetchMemes } from 'utils/contentful';
 import Joke from 'components/Joke';
+import Meme from 'components/Meme';
 import Header from 'components/Header';
-import { JokeProp } from 'utils/contentTypes/Jokes';
+import { JokeItemProp } from 'utils/contentTypes/Jokes';
 import { useState } from 'react';
+import { MemeItemProp } from '../utils/contentTypes/Memes';
 
 type Props = {
-  jokes: JokeProp[];
+  memes: MemeItemProp[];
+  jokes: JokeItemProp[];
+  items: (MemeItemProp | JokeItemProp)[];
   error?: string;
   totalPages: number;
+  totalJokePages: number;
+  totalMemePages: number;
 };
 
 const Home: React.FC<Props> = ({
-  jokes: jokeCollection,
+  items: itemCollection,
   error,
-  totalPages,
+  totalJokePages,
+  totalMemePages,
 }) => {
   const [page, setPage] = useState(1);
-  const [jokes, setJokes] = useState(jokeCollection);
+  const [jokePage, setJokePage] = useState(1);
+  const [memePage, setMemePage] = useState(1);
+  const [items, setItems] = useState(itemCollection);
+
+  const handlePagination = () => {
+    if (page < totalJokePages || page < totalMemePages) {
+      setPage((page) => page + 1);
+    }
+    if (page < totalJokePages) {
+      setJokePage((jokePage) => jokePage + 1);
+      fetchPaginatedJokes();
+    }
+
+    if (page < totalMemePages) {
+      setMemePage((memePage) => memePage + 1);
+      fetchPaginatedMemes();
+    }
+  };
 
   const fetchPaginatedJokes = async () => {
-    const { jokeCollection: paginatedJokes } = await fetchJokes(page);
-    setJokes([...jokes, ...paginatedJokes.items]);
+    const { jokeCollection: paginatedJokes } = await fetchJokes(jokePage);
+    setItems((items) => [...items, ...paginatedJokes.items]);
+  };
+
+  const fetchPaginatedMemes = async () => {
+    const { memeCollection: paginatedMemes } = await fetchMemes(memePage);
+    setItems((items) => [...items, ...paginatedMemes.items]);
   };
 
   return (
@@ -59,18 +88,19 @@ const Home: React.FC<Props> = ({
             className="masonry"
             columnClassName="masonry-column"
           >
-            {jokes.map(({ content, sys }) => (
-              <Joke key={sys.id} content={content} sys={sys} />
-            ))}
+            {items.map((item) =>
+              item.__typename === 'Joke' ? (
+                <Joke key={item.sys.id} content={item.content} sys={item.sys} />
+              ) : (
+                <Meme key={item.sys.id} meme={item.meme} sys={item.sys} />
+              )
+            )}
           </Masonry>
         )}
-        {page < totalPages && (
+        {(page < totalMemePages || page < totalJokePages) && (
           <button
             className="block-shadow max-w-sm w-full py-2 mx-auto mb-5 bg-yellow justify-center focus:outline-none	cursor-pointer"
-            onClick={() => {
-              setPage((page) => page + 1);
-              fetchPaginatedJokes();
-            }}
+            onClick={handlePagination}
           >
             Load more
           </button>
@@ -90,16 +120,22 @@ const Home: React.FC<Props> = ({
 
 export const getStaticProps: GetStaticProps = async () => {
   try {
+    const { memeCollection } = await fetchMemes();
     const { jokeCollection } = await fetchJokes();
     return {
       props: {
-        totalPages: jokeCollection.total / PAGE_SIZE,
+        totalJokePages: jokeCollection.total / PAGE_SIZE,
+        totalMemePages: memeCollection.total / PAGE_SIZE,
         jokes: jokeCollection.items,
+        memes: memeCollection.items,
+        items: [...jokeCollection.items, ...memeCollection.items],
+        totalPages: (memeCollection.total + jokeCollection.total) / PAGE_SIZE,
       },
     };
-  } catch ({ graphQLErrors, networkError }) {
+  } catch (e) {
+    const { graphQLErrors, networkError } = e;
     let error;
-    if (!!graphQLErrors.length) {
+    if (!!graphQLErrors) {
       graphQLErrors.forEach(
         ({ message }: { message: string }) => (error = message)
       );
