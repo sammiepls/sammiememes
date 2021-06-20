@@ -1,14 +1,15 @@
+import { useState } from 'react';
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import Masonry from 'react-masonry-css';
-import { PAGE_SIZE, fetchJokes, fetchMemes } from 'utils/contentful';
 import Joke from 'components/Joke';
 import Meme from 'components/Meme';
 import Header from 'components/Header';
 import Error from 'components/Error';
+import Filter from 'components/Filter';
+import { PAGE_SIZE, fetchJokes, fetchMemes } from 'utils/contentful';
 import { JokeItemProp } from 'utils/contentTypes/Jokes';
-import { useState } from 'react';
-import { MemeItemProp } from '../utils/contentTypes/Memes';
+import { MemeItemProp } from 'utils/contentTypes/Memes';
 
 type Props = {
   memes: MemeItemProp[];
@@ -30,6 +31,7 @@ const Home: React.FC<Props> = ({
   const [jokePage, setJokePage] = useState(1);
   const [memePage, setMemePage] = useState(1);
   const [items, setItems] = useState(itemCollection);
+  const [filter, setFilter] = useState<'all' | 'meme' | 'joke'>('all');
 
   const handlePagination = () => {
     if (page < totalJokePages || page < totalMemePages) {
@@ -56,6 +58,10 @@ const Home: React.FC<Props> = ({
     setItems((items) => [...items, ...paginatedMemes.items]);
   };
 
+  const handleFilter = (f: 'all' | 'meme' | 'joke') => {
+    f === filter ? setFilter('all') : setFilter(f);
+  };
+
   return (
     <div className="bg-purple bg-opacity-100 h-screen overflow-y-scroll flex flex-col">
       <Head>
@@ -73,6 +79,7 @@ const Home: React.FC<Props> = ({
 
       <Header />
       <main className="md:mx-auto px-4 flex flex-1 flex-col max-w-6xl">
+        <Filter filter={filter} setFilter={handleFilter} />
         {error ? (
           <Error error={error} />
         ) : (
@@ -85,13 +92,27 @@ const Home: React.FC<Props> = ({
             className="masonry"
             columnClassName="masonry-column"
           >
-            {items.map((item) =>
-              item.__typename === 'Joke' ? (
-                <Joke key={item.sys.id} content={item.content} sys={item.sys} />
-              ) : (
-                <Meme key={item.sys.id} meme={item.meme} sys={item.sys} />
-              )
-            )}
+            {items
+              .filter((i) => {
+                if (filter === 'joke') {
+                  if (i.__typename === 'Joke') return i;
+                } else if (filter === 'meme') {
+                  if (i.__typename === 'Meme') return i;
+                } else {
+                  return i;
+                }
+              })
+              .map((item) =>
+                item.__typename === 'Joke' ? (
+                  <Joke
+                    key={item.sys.id}
+                    content={item.content}
+                    sys={item.sys}
+                  />
+                ) : (
+                  <Meme key={item.sys.id} meme={item.meme} sys={item.sys} />
+                )
+              )}
           </Masonry>
         )}
         {(page < totalMemePages || page < totalJokePages) && (
